@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/js/bootstrap-datetimepicker.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="container">
+                    <img id="expandedImg" class="img-responsive" style="width:80%;height:80%" src="">
+                </div>
+            </div>
+            <!--<div class="container">-->
+            <div class="row">
+
+                <div class="form-group">
+
+                    <label class="control-label col-sm-2" for="Name">Name:</label>
+                    <div class="col-sm-12">
+                        <p class="form-control-static" id="name"></p>
+                    </div>
+                    <label class="control-label col-sm-2" for="Email">Email:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static" id="Email"></p>
+
+                    </div>
+                    <label class="control-label col-sm-10" for="DoB">Date Of Birth:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static" id="DOB"></p>
+
+                    </div>
+                    <label class="control-label col-sm-2" for="phone">Phone:</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static" id="Phone"></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <button type="button" class="btn btn-info" id="abc">Edit</button>
+                <button type="button" class="btn btn-info" id="Delete">Delete</button>
+            </div>
+
+        </div>
+
+    </div>
+    <br />
+    
+    <div class="container" id="usrUpdate">
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="title">Title : </label>
+                <input type="text" class="form-control" id="title_up" name="title">
+            </div>
+
+            <div class="form-group col-md-4">
+                <label for="Fname">First Name : </label>
+                <input type="text" class="form-control" id="Fname_up" name="Fname">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Lname">Last Name : </label>
+                <input type="text" class="form-control" id="Lname_up" name="Lname">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="email">Email : </label>
+                <input type="text" class="form-control" id="email_up" name="title">
+            </div>
+            
+            <div class="form-group col-md-4">
+                <label for="DOB">Date Of Birth : </label>
+                <input class="form-control" id="DOB_up" name="date" placeholder="MM/DD/YYY" type="date" />
+                <!--<input type="text" class="form-control datepicker" id="DOB_up" name="DOB">-->
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Phone">Phone Number : </label>
+                <input type="text" class="form-control" id="Phone_up" name="DOB">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4">
+
+                <button type="button" class="btn btn-info" id="update">Update</button>
+            </div>
+        </div>
+        </div>
+
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+        <script>
+            
+            $.urlParam = function (name) {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+                    .exec(window.location.search);
+
+                return (results !== null) ? results[1] || 0 : false;
+            }
+            $(document).ready(function () {
+                
+                
+                
+                $('#usrUpdate').hide();
+                var userId = $.urlParam('id');
+                 
+                $.ajax({
+                    type: "GET",
+                    url: "API/User/" + userId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        //alert(JSON.stringify(data));
+                        var fullName = data.Title + " " + data.FName + " " + data.LName;
+
+                        var date = data.DOB;
+                        date = date.split(' ')[0];
+                        var dateUp = data.DOB;
+                        var d11=moment(dateUp).format('YYYY-MM-DD');
+                        
+                        $("#name").text(fullName);
+                        $("#Email").text(data.Email);
+                        $("#DOB").text(date);
+                        $("#Phone").text(data.PhoneNumber);
+                        $("#expandedImg").attr("src", data.Images);
+
+                        $("#title_up").val(data.Title);
+                        $("#Fname_up").val(data.FName);
+                        $("#Lname_up").val(data.LName);
+                        $("#email_up").val(data.Email);
+                       
+
+                       
+                        $("#DOB_up").val(d11);
+                        $("#Phone_up").val(data.PhoneNumber);
+                        console.log(data);
+                    }, //End of AJAX Success
+
+                    failure: function (data) {// AJAX failure function
+                        alert(data.responseText);
+                    },
+                    error: function (data) {// AJAX error function
+                        alert(data.responseText);
+                    }
+                });
+
+            });
+            $(document).on('click', '#abc', function () {
+
+                $('#usrUpdate').show();
+
+            });
+            $('#update').on('click', function () {
+                $.ajax({
+                    contentType: 'application/json',
+                    type: "POST",
+                    url: "API/Update",
+                    data: getData(),
+                    success: function (data, textStatus, jqXHR) {
+                        alert("Form Updated Sucessfully");
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("#postResult").val(jqXHR.statusText);
+                    }
+                });
+                function getData() {
+                  var userId = $.urlParam('id');
+                var employee = new Object();
+                    employee.ID = userId;
+                employee.Title = $("#title_up").val();
+                employee.FName = $("#Fname_up").val();
+                employee.LName = $("#Lname_up").val();
+                employee.Email = $("#email_up").val();
+                employee.DOB = $("#DOB_up").val();
+                employee.PhoneNumber = $("#Phone_up").val();
+                var srcImage = $('#expandedImg').attr("src");
+                employee.Images = srcImage ;
+                return JSON.stringify(employee);
+            }
+            });
+            $('#Delete').on('click', function () {
+                $('#usrUpdate').hide();
+                var userId = $.urlParam('id');
+                 
+                $.ajax({
+                    type: "Delete",
+                    url: "API/Delete/" + userId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        
+                        window.location = "Summary.html";
+                    }, //End of AJAX Success
+
+                    failure: function (data) {// AJAX failure function
+                        
+                        alert(data.responseText);
+                    },
+                    error: function (data) {// AJAX error function
+                        
+                        alert(data.responseText);
+                    }
+                });
+
+            });
+        </script>
+</body>
+
+</html>

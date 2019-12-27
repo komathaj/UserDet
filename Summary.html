@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Adding </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/af.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"></script>
+    <style>
+
+
+        
+
+            </style>
+
+</head>
+
+<body>
+    <!--<div class="container">
+        <span onclick="this.parentElement.style.display='none'" class="closebtn">&times;</span>
+        <img id="expandedImg" style="width:30%">
+        <div id="imgtext"></div>
+    </div>-->
+    <div class="container">
+
+        <div class="col-md-4">
+            <p>Number of Users</p>
+            <div class="input-group">
+
+                <input type="text" class="form-control" id="noOfUsers" value="">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="CrnoOfUsers">Go!</button>
+                </span>
+                <span id="errmsg"></span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+
+        <div class="col-md-4">
+            <p>Search by Name</p>
+            <div class="input-group">
+
+                <input type="text" class="form-control" id="name" value="">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="Crname">Go!</button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <font face="Calibri">
+        <div class="panel panel-primary">
+
+            <div class="panel-heading">
+                <h2>List of Users</h2>
+            </div>
+
+            <div class="panel-body">
+
+                <table class="table" id="Table" border="0">
+                    <thead class="thead-dark">
+                        <tr>
+
+                            <th scope="col">Email</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Date of Birth</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Images</th>
+                            <th scope="col"></th>
+                            <th scope="col">Users</th>
+                        </tr>   <!--table-row -->
+                    </thead>
+                </table>   <!--end of table -->
+            </div> <!-- Panel-body -->
+        </div> <!-- Panel -->
+
+    </font>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        
+        function success(data) {
+            $("#DIV").html('');
+                    var DIV = '';
+                    $.each(data, function (i, item) {
+
+                        var date = item.DOB;
+                        date = date.split(' ')[0];
+
+                        var rows = "<tr>" +
+                            "<td id='Email' scope=\"row\">" + item.Email + "</td>" +
+                            "<td id='Name' scope=\"row\">" + item.Title + " " + item.FName + " " + item.LName + "</td>" +
+                            "<td id='DOB' scope=\"row\">" + date + "</td>" +
+                            "<td id='Phone' scope=\"row\">" + item.PhoneNumber + "</td>" +
+                            "<td id='Image' scope=\"row\"><img src=\"" + item.Images + "\" height=42 width = 52 ></td>"+
+                        "<td id='xyz' scope=\"row\" class='wrapperDivHidden'> <input type=\"hidden\" value=" + item.ID + " id=\"DocID\" class=\"question_id_val\" /> </td>" +
+                            "<td id='abc' scope=\"row\"><input type='button' class=\"btn btn-info\" value='User' id='User' /></td>" +
+                            "</tr>";
+                        //alert(rows);
+                        $('#Table').append(rows);
+                        
+                    }); //End of foreach Loop
+        }
+       $('#Crname').on('click', function () {
+            var user = $("#name").val();
+           if (user == "") {
+               alert('Please enter some contents');
+               return;
+           }
+            $("#Table tr").remove();
+            $.ajax({
+                type: "GET",
+                url: "API/Name",
+                data: {
+                    Name: user
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    //alert(JSON.stringify(data));
+                    
+                    success(data);
+                    console.log(data);
+                }, //End of AJAX Success
+
+                failure: function (data) {// AJAX failure function
+                    alert(data.responseText);
+                },
+                error: function (data) {// AJAX error function
+                    alert(data.responseText);
+                }
+            });
+       });
+
+        $('#CrnoOfUsers').on('click', function () {
+            var user = $("#noOfUsers").val();
+            if (user == "") {
+               alert('Please enter some contents');
+               return;
+           }
+            $("#Table tr").remove();
+            $.ajax({
+                type: "GET",
+                url: "API/NoOfUsers",
+                data: {
+                    NoOfUsers: user
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    //alert(JSON.stringify(data));
+                    success(data);
+
+                    console.log(data);
+                }, //End of AJAX Success
+
+                failure: function (data) {// AJAX failure function
+                    alert(data.responseText);
+                },
+                error: function (data) {// AJAX error function
+                    alert(data.responseText);
+                }
+            });
+        });
+
+        $(document).ready(function () {
+              $("#noOfUsers").keypress(function (e) {
+     //if the letter is not digit then display error and don't type anything
+     if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+        //display error message
+        $("#errmsg").html("Digits Only").show().fadeOut("slow");
+               return false;
+    }
+   });
+            $.ajax({
+                type: "GET",
+                url: "API/All",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    //alert(JSON.stringify(data));
+                   success(data);
+                    
+                    console.log(data);
+                }, //End of AJAX Success
+
+                failure: function (data) {// AJAX failure function
+                    alert(data.responseText);
+                },
+                error: function (data) {// AJAX error function
+                    alert(data.responseText);
+                }
+
+            });
+            $(document).on('click', '#abc .btn', function () {
+                var data = $(this).parents('tr').find('.wrapperDivHidden input[type="hidden"]').val();
+                window.location="User.html?id="+data;
+            });
+
+        });
+    </script>
+</body>
+</html>
